@@ -36,7 +36,8 @@ class SnowflakeConnectionRequest(BaseModel):
     database: Optional[str] = Field(None, description="Database name")
     schema_name: Optional[str] = Field(None, description="Schema name")
     role: Optional[str] = Field(None, description="Role name")
-    connection_timeout: int = Field(30, description="Connection timeout in seconds")
+    authenticator: Optional[str] = Field("snowflake", description="Authenticator (snowflake, externalbrowser, oauth, etc.)")
+    connection_timeout: int = Field(60, description="Connection timeout in seconds (60s+ recommended for Duo MFA)")
 
 
 class GenericConnectionRequest(BaseModel):
@@ -52,6 +53,7 @@ class GenericConnectionRequest(BaseModel):
     # Auth
     username: str = Field("", description="Login username")
     password: str = Field("", description="Login password")
+    authenticator: Optional[str] = Field("snowflake", description="Snowflake authenticator (snowflake, externalbrowser)")
     
     # Snowflake / Specifics
     warehouse: Optional[str] = Field(None, description="Warehouse name")
@@ -62,7 +64,7 @@ class GenericConnectionRequest(BaseModel):
     # SQL Server specifics
     driver: Optional[str] = Field("ODBC Driver 17 for SQL Server", description="ODBC driver name")
     trust_server_certificate: bool = Field(True, description="Trust server certificate")
-    connection_timeout: int = Field(30, description="Connection timeout in seconds")
+    connection_timeout: int = Field(60, description="Connection timeout in seconds")
 
 
 class ConnectionTestResult(BaseModel):

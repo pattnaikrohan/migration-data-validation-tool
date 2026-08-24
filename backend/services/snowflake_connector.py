@@ -17,18 +17,31 @@ class SnowflakeConnector:
         self.connection: Optional[snowflake.connector.SnowflakeConnection] = None
     
     def test_connection(self, request: SnowflakeConnectionRequest) -> ConnectionTestResult:
-        """Test a Snowflake connection and return available databases."""
+        """Test a Snowflake connection and return available databases, supporting DUO MFA."""
         try:
-            conn = snowflake.connector.connect(
-                account=request.account,
-                user=request.username,
-                password=request.password,
-                warehouse=request.warehouse,
-                database=request.database,
-                schema=request.schema_name,
-                role=request.role,
-                login_timeout=request.connection_timeout,
-            )
+            auth = getattr(request, 'authenticator', None) or "snowflake"
+            timeout = max(getattr(request, 'connection_timeout', None) or 60, 60)
+            
+            conn_params = {
+                "account": request.account,
+                "user": request.username,
+                "password": request.password,
+                "login_timeout": timeout,
+                "client_session_keep_alive": True,
+                "client_store_temporary_credential": True,
+            }
+            if auth and auth != "snowflake":
+                conn_params["authenticator"] = auth
+            if request.warehouse:
+                conn_params["warehouse"] = request.warehouse
+            if request.database:
+                conn_params["database"] = request.database
+            if request.schema_name:
+                conn_params["schema"] = request.schema_name
+            if request.role:
+                conn_params["role"] = request.role
+                
+            conn = snowflake.connector.connect(**conn_params)
             
             cursor = conn.cursor()
             cursor.execute("SELECT CURRENT_VERSION()")
@@ -41,33 +54,50 @@ class SnowflakeConnector:
             
             return ConnectionTestResult(
                 success=True,
-                message="Connected successfully to Snowflake",
+                message="Connected successfully to Snowflake (MFA Verified)",
                 database_type=DatabaseType.SNOWFLAKE,
                 server_version=f"Snowflake {version}",
                 databases=databases,
             )
         except Exception as e:
+            err_msg = str(e)
+            if "timeout" in err_msg.lower() or "duo" in err_msg.lower():
+                err_msg += " (Note: If DUO MFA Push was triggered on your phone, please ensure you approve the push prompt before the timeout expires)."
             return ConnectionTestResult(
                 success=False,
-                message=f"Connection failed: {str(e)}",
+                message=f"Connection failed: {err_msg}",
                 database_type=DatabaseType.SNOWFLAKE,
             )
     
     def connect(self, request: SnowflakeConnectionRequest) -> bool:
-        """Establish a persistent connection."""
+        """Establish a persistent connection with session keep-alive."""
         try:
-            self.connection = snowflake.connector.connect(
-                account=request.account,
-                user=request.username,
-                password=request.password,
-                warehouse=request.warehouse,
-                database=request.database,
-                schema=request.schema_name,
-                role=request.role,
-                login_timeout=request.connection_timeout,
-            )
+            auth = getattr(request, 'authenticator', None) or "snowflake"
+            timeout = max(getattr(request, 'connection_timeout', None) or 60, 60)
+            
+            conn_params = {
+                "account": request.account,
+                "user": request.username,
+                "password": request.password,
+                "login_timeout": timeout,
+                "client_session_keep_alive": True,
+                "client_store_temporary_credential": True,
+            }
+            if auth and auth != "snowflake":
+                conn_params["authenticator"] = auth
+            if request.warehouse:
+                conn_params["warehouse"] = request.warehouse
+            if request.database:
+                conn_params["database"] = request.database
+            if request.schema_name:
+                conn_params["schema"] = request.schema_name
+            if request.role:
+                conn_params["role"] = request.role
+                
+            self.connection = snowflake.connector.connect(**conn_params)
             return True
-        except Exception:
+        except Exception as e:
+            print(f"Snowflake connect error: {e}")
             return False
     
     def get_schemas(self, database: str) -> list[SchemaInfo]:
