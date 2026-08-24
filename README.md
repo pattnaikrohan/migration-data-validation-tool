@@ -3,6 +3,13 @@
 ### Universal Multi-Database Automated Data Validation Framework
 **Snowflake ↔ Snowflake • SQL Server ↔ Snowflake • SQL Server ↔ SQL Server • PostgreSQL • MySQL • Oracle • Databricks**
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-teal?style=for-the-badge&logo=github)](https://pattnaikrohan.github.io/migration-data-validation-tool/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev)
+
+> 🚀 **Live Hosted App**: **[https://pattnaikrohan.github.io/migration-data-validation-tool/](https://pattnaikrohan.github.io/migration-data-validation-tool/)**
+
 A full-stack, enterprise data validation platform that automatically discovers, matches, and validates data across heterogeneous or homogeneous databases. Built with a high-performance Python FastAPI backend and a modern React + Vite frontend with glassmorphism UI.
 
 ---
