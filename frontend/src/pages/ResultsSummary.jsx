@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { DEMO_VALIDATION_RESULTS } from '../data/demoData';
+import { useAppState } from '../store/AppContext';
+import { DEMO_VALIDATION_RESULTS, DEMO_TABLE_MATCHES } from '../data/demoData';
 import {
   CheckCircle2, XCircle, AlertTriangle,
   FileSpreadsheet, FileText, TrendingUp, Database, Rows3,
@@ -10,6 +11,7 @@ import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer,
 } from 'recharts';
+import { generateExcelReport, generatePDFReport } from '../utils/reportGenerator';
 import './ResultsSummary.css';
 
 function AnimatedCounter({ value, suffix = '' }) {
@@ -47,6 +49,7 @@ const statusColors = {
 const CHART_COLORS = ['#059669', '#dc2626', '#d97706', '#0284c7'];
 
 export default function ResultsSummary({ onPrev }) {
+  const state = useAppState();
   const results = DEMO_VALIDATION_RESULTS;
   const passed = results.filter(r => r.overall_status === 'PASS').length;
   const failed = results.filter(r => r.overall_status === 'FAIL').length;
@@ -81,20 +84,20 @@ export default function ResultsSummary({ onPrev }) {
 
   const handleDownloadExcel = () => {
     setDownloadingExcel(true);
-    showToast('Downloading Excel report (.xlsx)...');
+    showToast('Generating Excel report (.xlsx)...');
     try {
-      const filename = 'CozMatch_Validation_Report_VR-3A8F21B0.xlsx';
-      const url = `/api/reports/VR-3A8F21B0/excel/${filename}`;
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      showToast('Excel report (.xlsx) downloaded successfully!');
+      generateExcelReport({
+        runId: 'VR-3A8F21B0',
+        timestamp: new Date().toLocaleString(),
+        sourceSchema: `${state?.source?.selectedDatabase || 'SalesDB'}.${state?.source?.selectedSchema || 'dbo'}`,
+        targetSchema: `${state?.target?.selectedDatabase || 'PRODUCTION_DW'}.${state?.target?.selectedSchema || 'PUBLIC'}`,
+        results,
+        tableMatches: DEMO_TABLE_MATCHES,
+      });
+      showToast('Excel report (.xlsx) generated and downloaded successfully!');
     } catch (err) {
-      console.error('Error downloading Excel report:', err);
-      showToast('Error downloading Excel report: ' + err.message);
+      console.error('Error generating Excel report:', err);
+      showToast('Error generating Excel report: ' + err.message);
     } finally {
       setTimeout(() => setDownloadingExcel(false), 500);
     }
@@ -102,20 +105,19 @@ export default function ResultsSummary({ onPrev }) {
 
   const handleDownloadPDF = () => {
     setDownloadingPDF(true);
-    showToast('Downloading PDF audit report (.pdf)...');
+    showToast('Generating PDF audit report (.pdf)...');
     try {
-      const filename = 'CozMatch_Validation_Audit_VR-3A8F21B0.pdf';
-      const url = `/api/reports/VR-3A8F21B0/pdf/${filename}`;
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      generatePDFReport({
+        runId: 'VR-3A8F21B0',
+        timestamp: new Date().toLocaleString(),
+        sourceSchema: `${state?.source?.selectedDatabase || 'SalesDB'}.${state?.source?.selectedSchema || 'dbo'}`,
+        targetSchema: `${state?.target?.selectedDatabase || 'PRODUCTION_DW'}.${state?.target?.selectedSchema || 'PUBLIC'}`,
+        results,
+      });
       showToast('Executive PDF audit report (.pdf) downloaded successfully!');
     } catch (err) {
-      console.error('Error downloading PDF report:', err);
-      showToast('Error downloading PDF report: ' + err.message);
+      console.error('Error generating PDF report:', err);
+      showToast('Error generating PDF report: ' + err.message);
     } finally {
       setTimeout(() => setDownloadingPDF(false), 500);
     }
