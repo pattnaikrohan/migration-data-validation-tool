@@ -49,6 +49,9 @@ function AppContent() {
 
   const handleStepChange = (step) => {
     setCurrentStep(step);
+    if (step < currentStep) {
+      setCompletedSteps(prev => new Set([...prev].filter(i => i < step)));
+    }
   };
 
   const handleNextStep = () => {
@@ -57,7 +60,9 @@ function AppContent() {
   };
 
   const handlePrevStep = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 0));
+    const prevStep = Math.max(currentStep - 1, 0);
+    setCompletedSteps(prev => new Set([...prev].filter(i => i < prevStep)));
+    setCurrentStep(prevStep);
   };
 
   const handleToggleCollapse = () => {

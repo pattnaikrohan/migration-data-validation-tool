@@ -47,7 +47,7 @@ export default function Sidebar({
         {WORKFLOW_STEPS.map((step, index) => {
           const Icon = ICONS[step.icon] || Database;
           const isActive = currentStep === index;
-          const isCompleted = completedSteps.has(index);
+          const isCompleted = completedSteps.has(index) && index < currentStep;
           const isAccessible = index <= Math.max(currentStep, ...[...completedSteps, 0]);
 
           return (
