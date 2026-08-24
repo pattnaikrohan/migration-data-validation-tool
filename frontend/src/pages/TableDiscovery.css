@@ -1,0 +1,135 @@
+.discovery-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.discovery-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+}
+
+@media (max-width: 768px) {
+  .discovery-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.discovery-grid {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: flex-start;
+}
+
+@media (max-width: 900px) {
+  .discovery-grid {
+    flex-direction: column;
+  }
+  .discovery-arrow { transform: rotate(90deg); padding-top: 0; }
+}
+
+.discovery-panel {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-height: 600px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.discovery-panel-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.discovery-panel-header h3 {
+  font-size: 1.05rem;
+}
+
+.discovery-count {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.discovery-table-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 4px;
+}
+
+.discovery-table-item {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: #f8fafc;
+  border: 1px solid #eef2f6;
+  transition: all var(--transition-fast);
+  cursor: default;
+}
+
+.discovery-table-item:hover {
+  background: #ffffff;
+  border-color: var(--border-teal-light);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.table-item-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: 4px;
+}
+
+.table-item-icon {
+  color: var(--teal-600);
+  flex-shrink: 0;
+}
+
+.table-item-name {
+  font-family: var(--font-mono);
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.table-item-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding-left: 20px;
+}
+
+.meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+  padding: 2px 7px;
+  background: #ffffff;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.meta-chip.pk {
+  color: #b45309;
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+.discovery-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--teal-600);
+  flex-shrink: 0;
+  padding-top: 100px;
+}

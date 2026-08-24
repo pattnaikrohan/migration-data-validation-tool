@@ -1,0 +1,54 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   App Layout — Responsive & Collapsible
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: var(--bg-primary);
+  position: relative;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 280px;
+  min-height: 100vh;
+  min-width: 0; /* Critical: prevents flex child from expanding past viewport */
+  transition: margin-left var(--transition-default);
+  background: var(--bg-primary);
+}
+
+.app-main.collapsed {
+  margin-left: 76px;
+}
+
+.app-content {
+  flex: 1;
+  padding: 24px 32px;
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ─── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .app-main {
+    margin-left: 76px;
+  }
+  .app-content {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-main {
+    margin-left: 0;
+  }
+  .app-content {
+    padding: 16px;
+  }
+}

@@ -1,0 +1,151 @@
+.validation-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.validation-control {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  background: #ffffff;
+}
+
+.validation-control-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.validation-run-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.run-icon {
+  color: var(--teal-600);
+}
+
+.run-id {
+  font-size: 0.775rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+
+.validation-complete-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 6px 14px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: var(--radius-full);
+  color: #047857;
+  font-weight: 600;
+  font-size: 0.825rem;
+}
+
+.validation-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.validation-progress .progress-bar {
+  flex: 1;
+}
+
+.progress-text {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--teal-700);
+  min-width: 40px;
+  text-align: right;
+}
+
+/* Phase List */
+.phase-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.phase-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 12px 18px;
+  min-height: 50px;
+  transition: all var(--transition-fast);
+  background: #ffffff;
+  border: 1px solid var(--border-default);
+}
+
+.phase-item.active {
+  background: var(--teal-50) !important;
+  border-color: var(--border-teal-light) !important;
+  box-shadow: 0 2px 8px rgba(0, 175, 175, 0.08);
+}
+
+.phase-item:hover {
+  transform: none;
+}
+
+.phase-status-icon {
+  flex-shrink: 0;
+  width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.phase-pass { color: var(--status-pass); }
+.phase-warning { color: var(--status-warning); }
+.phase-fail { color: var(--status-fail); }
+.phase-running { color: var(--teal-600); }
+
+.phase-pending-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #cbd5e1;
+}
+
+.phase-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.phase-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.phase-active-text {
+  font-size: 0.725rem;
+  color: var(--teal-700);
+  font-weight: 500;
+}
+
+.phase-done-text {
+  font-size: 0.725rem;
+  color: var(--status-pass);
+}
+
+.phase-warn-text {
+  font-size: 0.725rem;
+  color: var(--status-warning);
+}
+
+.phase-number {
+  font-size: 0.725rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-weight: 500;
+}

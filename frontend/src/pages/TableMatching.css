@@ -1,0 +1,220 @@
+.matching-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.matching-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+}
+
+.stat-card.clickable {
+  cursor: pointer;
+  transition: all var(--transition-default);
+}
+.stat-card.clickable:hover {
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-1px);
+}
+
+.matching-table-container {
+  padding: 0;
+  overflow-x: auto;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.matching-table {
+  width: 100%;
+  min-width: 850px;
+  font-size: 0.825rem;
+}
+
+.table-name-cell {
+  font-family: var(--font-mono);
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.no-match-text {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.825rem;
+}
+
+/* Remap UI & Inline Select */
+.target-table-cell-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  min-width: 260px;
+}
+
+.target-table-cell-wrapper .table-name-cell,
+.target-table-cell-wrapper .no-match-text {
+  flex: 1;
+}
+
+.btn-remap-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: var(--teal-700);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.btn-remap-trigger:hover {
+  background: var(--teal-50);
+  border-color: var(--teal-500);
+  color: var(--teal-800);
+  box-shadow: 0 1px 4px rgba(0, 175, 175, 0.15);
+  transform: translateY(-1px);
+}
+
+.inline-remap-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-width: 240px;
+}
+
+.input-remap-select {
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--teal-900);
+  background: #f0fafb;
+  border: 1.5px solid var(--teal-500);
+  border-radius: var(--radius-sm);
+  flex: 1;
+}
+
+.btn-icon-only {
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  min-width: 28px;
+  height: 28px;
+}
+
+.row-editing {
+  background: #f0fafb !important;
+}
+
+.score-bar.compact {
+  min-width: 110px;
+}
+
+.score-bar.compact .score-bar-track {
+  height: 6px;
+}
+
+.rows-cell {
+  font-family: var(--font-mono);
+  font-size: 0.775rem;
+  color: var(--text-tertiary);
+}
+
+.row-separator {
+  color: var(--text-muted);
+  margin: 0 2px;
+}
+
+.match-actions {
+  display: flex;
+  gap: 4px;
+}
+
+/* Match Explanation Panel */
+.match-explanation {
+  padding: 20px 24px;
+  background: #f8fafc;
+  border-top: 1px solid var(--border-default);
+}
+
+.explanation-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.explanation-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.explanation-normalized {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--teal-700);
+  padding: 3px 10px;
+  background: #ffffff;
+  border: 1px solid var(--border-teal-light);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.explanation-scores {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.explanation-score-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.explanation-score-row .score-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  min-width: 200px;
+}
+
+.score-weight {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.explanation-score-row .score-bar {
+  flex: 1;
+}
+
+.explanation-footer {
+  margin-top: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-default);
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .matching-stats { grid-template-columns: repeat(2, 1fr); }
+  .matching-table-container { overflow-x: auto; }
+}

@@ -1,0 +1,272 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CozMatch Sidebar — Executive Vibrant Teal Theme
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 280px;
+  background: linear-gradient(180deg, #00878a 0%, #00989b 35%, #00a4a8 70%, #00b0b5 100%);
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width var(--transition-default);
+  box-shadow: 2px 0 16px rgba(0, 70, 75, 0.15);
+}
+
+.sidebar.collapsed {
+  width: 76px;
+}
+
+/* ─── CozMatch Brand Header ─────────────────────────────────────────────────── */
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  min-height: 84px;
+  box-sizing: border-box;
+}
+
+.sidebar.collapsed .sidebar-logo {
+  justify-content: center;
+  padding: 20px 10px;
+}
+
+.logo-badge {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-radius: 50%;
+  padding: 6px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 40, 45, 0.2);
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  box-sizing: border-box;
+  transition: transform var(--transition-fast);
+}
+
+.logo-badge:hover {
+  transform: scale(1.05);
+}
+
+.logo-emblem-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.logo-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.logo-title {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.logo-sparkle {
+  color: #ffffff;
+  opacity: 0.95;
+}
+
+.logo-subtitle {
+  font-size: 0.675rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ─── Navigation ────────────────────────────────────────────────────────────── */
+.sidebar-nav {
+  flex: 1;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar.collapsed .sidebar-nav {
+  padding: 18px 10px;
+  align-items: center;
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 16px;
+  border-radius: 14px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  color: #ffffff;
+}
+
+.sidebar.collapsed .sidebar-nav-item {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.sidebar-nav-item:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.sidebar-nav-item.accessible:hover:not(.active):not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Active Item — Posh White Capsule */
+.sidebar-nav-item.active {
+  background: #ffffff !important;
+  border-radius: 28px;
+  box-shadow: 0 4px 18px rgba(0, 45, 50, 0.18);
+  transform: none;
+}
+
+.sidebar.collapsed .sidebar-nav-item.active {
+  border-radius: 50%;
+  width: 46px;
+  height: 46px;
+}
+
+/* Icons */
+.nav-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #ffffff;
+  transition: color var(--transition-fast);
+}
+
+.sidebar-nav-item.active .nav-item-icon {
+  color: #00878a;
+}
+
+.completed-check {
+  color: #ffffff;
+}
+
+.sidebar-nav-item.active .completed-check {
+  color: #00878a;
+}
+
+/* Content */
+.nav-item-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+
+.nav-item-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.sidebar-nav-item.active .nav-item-label {
+  color: #006f72;
+}
+
+.nav-item-desc {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+.sidebar-nav-item.active .nav-item-desc {
+  color: #008b8f;
+  font-weight: 600;
+}
+
+/* ─── Bottom & Collapse Toggle ──────────────────────────────────────────────── */
+.sidebar-bottom {
+  padding: 12px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar.collapsed .sidebar-bottom {
+  padding: 12px 10px;
+  align-items: center;
+}
+
+.sidebar-collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.1);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.775rem;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+  width: 100%;
+}
+
+.sidebar.collapsed .sidebar-collapse-btn {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.sidebar-collapse-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.collapse-text {
+  font-size: 0.775rem;
+  letter-spacing: 0.02em;
+}
+
+.sidebar-footer {
+  font-size: 0.675rem;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
+  font-weight: 500;
+}
