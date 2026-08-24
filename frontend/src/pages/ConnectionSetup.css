@@ -2,6 +2,31 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
+  padding-bottom: 60px;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Connection Grid */
+.connection-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(360px, 1fr));
+  gap: var(--space-xl);
+  width: 100%;
+}
+
+@media (max-width: 1240px) {
+  .app-layout:not(.sidebar-is-collapsed) .connection-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+}
+
+@media (max-width: 960px) {
+  .connection-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
 }
 
 .page-intro-section {
@@ -115,18 +140,7 @@
   box-shadow: 0 2px 8px rgba(0, 175, 175, 0.25);
 }
 
-/* Connection Grid */
-.connection-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-xl);
-}
 
-@media (max-width: 960px) {
-  .connection-grid {
-    grid-template-columns: 1fr;
-  }
-}
 
 .connection-card {
   padding: 24px;

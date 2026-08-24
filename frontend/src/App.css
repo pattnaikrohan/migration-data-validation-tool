@@ -19,6 +19,9 @@
   min-width: 0; /* Critical: prevents flex child from expanding past viewport */
   transition: margin-left var(--transition-default);
   background: var(--bg-primary);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 .app-main.collapsed {
@@ -27,7 +30,7 @@
 
 .app-content {
   flex: 1;
-  padding: 24px 32px;
+  padding: 24px 32px 80px 32px; /* Generous bottom room for comfortable scrolling */
   width: 100%;
   max-width: 1500px;
   margin: 0 auto;
