@@ -156,7 +156,9 @@
 .connection-card-header {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: 12px;
+  width: 100%;
+  position: relative;
 }
 
 .connection-icon {
@@ -172,6 +174,7 @@
 
 .connection-title-block {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
@@ -179,7 +182,8 @@
 .engine-select-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
+  min-width: 0;
 }
 
 .role-tag {
@@ -198,17 +202,21 @@
 }
 
 .engine-dropdown-select {
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
   background: transparent;
   border: 1px solid transparent;
   border-radius: var(--radius-md);
-  padding: 2px 6px;
-  margin-left: -6px;
+  padding: 2px 4px;
+  margin-left: -4px;
   cursor: pointer;
   transition: all var(--transition-fast);
   outline: none;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .engine-dropdown-select:hover {
@@ -223,15 +231,16 @@
 }
 
 .connection-status-badge {
-  margin-left: auto;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 4px 12px;
+  padding: 4px 10px;
   border-radius: var(--radius-full);
-  font-size: 0.75rem;
+  font-size: 0.725rem;
   font-weight: 600;
   white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .connection-status-badge.connected {
