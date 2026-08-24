@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAppState } from '../store/AppContext';
 import { DEMO_SOURCE_TABLES, DEMO_TARGET_TABLES, DEMO_TABLE_MATCHES } from '../data/demoData';
-import { Columns3, Check, X, ArrowRight, ChevronDown, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Columns3, Check, X, ArrowRight, ChevronDown, ChevronRight, CheckCircle2, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './ColumnMatching.css';
 
@@ -108,19 +108,89 @@ function getConfidence(score) {
 export default function ColumnMatching({ onNext, onPrev }) {
   const state = useAppState();
   const [expandedTable, setExpandedTable] = useState('customer_master');
+  const [columnDecisions, setColumnDecisions] = useState({});
+  const [toastMessage, setToastMessage] = useState(null);
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
   const matchedTables = DEMO_TABLE_MATCHES.filter(m => m.target_table && m.score > 0);
+
+  const handleDecision = (tableName, colSource, decision) => {
+    setColumnDecisions(prev => {
+      const tableDecisions = prev[tableName] || {};
+      const current = tableDecisions[colSource];
+      const newDecision = current === decision ? null : decision;
+      return {
+        ...prev,
+        [tableName]: {
+          ...tableDecisions,
+          [colSource]: newDecision,
+        },
+      };
+    });
+
+    if (decision === 'approved') {
+      showToast(`Column '${colSource}' approved.`);
+    } else {
+      showToast(`Column '${colSource}' excluded from validation.`);
+    }
+  };
+
+  const handleApproveAll = (tableName, columns) => {
+    setColumnDecisions(prev => {
+      const newTable = {};
+      columns.forEach(c => {
+        newTable[c.source] = 'approved';
+      });
+      return {
+        ...prev,
+        [tableName]: newTable,
+      };
+    });
+    showToast(`All ${columns.length} columns in '${tableName}' approved.`);
+  };
+
+  const handleResetAll = (tableName) => {
+    setColumnDecisions(prev => {
+      const copy = { ...prev };
+      delete copy[tableName];
+      return copy;
+    });
+    showToast(`Column decisions in '${tableName}' reset.`);
+  };
 
   return (
     <div className="column-page">
+      {/* Toast message */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            className="column-toast"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+          >
+            <CheckCircle2 size={16} />
+            <span>{toastMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <motion.p className="page-description" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         Columns have been automatically matched between <strong>{state.source.engineLabel}</strong> and <strong>{state.target.engineLabel}</strong> for each approved table pair. Click any table row to expand 
-        and review individual column mappings, data type compatibility, and match scores.
+        and review individual column mappings, data type compatibility, and match scores. You can click <strong>✓</strong> to approve or <strong>✕</strong> to exclude any column.
       </motion.p>
 
       <div className="column-table-list">
         {matchedTables.map((table, i) => {
           const isExpanded = expandedTable === table.source_table;
           const columns = getColumnsForTable(table.source_table, table.target_table);
+          const tableDecs = columnDecisions[table.source_table] || {};
+          const approvedCount = columns.filter(c => tableDecs[c.source] === 'approved').length;
+          const rejectedCount = columns.filter(c => tableDecs[c.source] === 'rejected').length;
           const avgScore = columns.length > 0 ? (columns.reduce((s, c) => s + c.score, 0) / columns.length).toFixed(1) : 0;
 
           return (
@@ -145,6 +215,12 @@ export default function ColumnMatching({ onNext, onPrev }) {
                   </div>
                 </div>
                 <div className="column-table-meta">
+                  {approvedCount > 0 && (
+                    <span className="badge badge-pass">{approvedCount} approved</span>
+                  )}
+                  {rejectedCount > 0 && (
+                    <span className="badge badge-fail">{rejectedCount} excluded</span>
+                  )}
                   <span className={`badge badge-${table.confidence.replace('_', '-')}`}>
                     {table.score}%
                   </span>
@@ -164,6 +240,29 @@ export default function ColumnMatching({ onNext, onPrev }) {
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.25 }}
                   >
+                    {/* Table-level quick actions toolbar */}
+                    <div className="column-details-toolbar">
+                      <span className="toolbar-info">
+                        Reviewing {columns.length} column mappings for <strong>{table.source_table}</strong>
+                      </span>
+                      <div className="toolbar-actions">
+                        <button
+                          className="btn-toolbar-action btn-toolbar-approve"
+                          onClick={() => handleApproveAll(table.source_table, columns)}
+                          title="Approve all columns for this table"
+                        >
+                          <Check size={13} /> Approve All ({columns.length})
+                        </button>
+                        <button
+                          className="btn-toolbar-action btn-toolbar-reset"
+                          onClick={() => handleResetAll(table.source_table)}
+                          title="Reset decisions for this table"
+                        >
+                          <RotateCcw size={12} /> Reset
+                        </button>
+                      </div>
+                    </div>
+
                     <table className="data-table column-match-table">
                       <thead>
                         <tr>
@@ -173,30 +272,39 @@ export default function ColumnMatching({ onNext, onPrev }) {
                           <th>Source Type</th>
                           <th>Target Type</th>
                           <th>Type Compatibility</th>
-                          <th>Actions</th>
+                          <th style={{ textAlign: 'center' }}>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
                         {columns.map((col, j) => {
                           const conf = getConfidence(col.score);
+                          const dec = tableDecs[col.source];
+                          const isApproved = dec === 'approved';
+                          const isRejected = dec === 'rejected';
+
                           return (
                             <motion.tr
                               key={col.source}
+                              className={`col-row ${isRejected ? 'col-row-rejected' : isApproved ? 'col-row-approved' : ''}`}
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
                               transition={{ delay: j * 0.02 }}
                             >
-                              <td><span className="table-name-cell">{col.source}</span></td>
-                              <td><span className="table-name-cell">{col.target}</span></td>
+                              <td>
+                                <span className={`table-name-cell ${isRejected ? 'cell-dimmed' : ''}`}>{col.source}</span>
+                              </td>
+                              <td>
+                                <span className={`table-name-cell ${isRejected ? 'cell-dimmed' : ''}`}>{col.target}</span>
+                              </td>
                               <td>
                                 <div className="score-bar compact">
                                   <div className="score-bar-track">
                                     <div className="score-bar-fill" style={{
                                       width: `${col.score}%`,
-                                      background: `linear-gradient(90deg, #008b8b, ${confidenceColors[conf]})`,
+                                      background: isRejected ? '#94a3b8' : `linear-gradient(90deg, #008b8b, ${confidenceColors[conf]})`,
                                     }} />
                                   </div>
-                                  <span className="score-bar-value" style={{ color: confidenceColors[conf] }}>
+                                  <span className="score-bar-value" style={{ color: isRejected ? '#94a3b8' : confidenceColors[conf] }}>
                                     {col.score}%
                                   </span>
                                 </div>
@@ -204,14 +312,38 @@ export default function ColumnMatching({ onNext, onPrev }) {
                               <td><span className="dtype-chip">{col.sType}</span></td>
                               <td><span className="dtype-chip">{col.tType}</span></td>
                               <td>
-                                <span className={`badge ${col.status === 'PASS' ? 'badge-pass' : col.status === 'COMPATIBLE' ? 'badge-info' : 'badge-warning'}`}>
-                                  {col.status}
-                                </span>
+                                {isApproved ? (
+                                  <span className="badge badge-pass">
+                                    <Check size={11} /> APPROVED
+                                  </span>
+                                ) : isRejected ? (
+                                  <span className="badge badge-fail">
+                                    <X size={11} /> EXCLUDED
+                                  </span>
+                                ) : (
+                                  <span className={`badge ${col.status === 'PASS' ? 'badge-pass' : col.status === 'COMPATIBLE' ? 'badge-info' : 'badge-warning'}`}>
+                                    {col.status}
+                                  </span>
+                                )}
                               </td>
                               <td>
-                                <div className="match-actions">
-                                  <button className="btn btn-success btn-sm" title="Approve"><Check size={13} /></button>
-                                  <button className="btn btn-danger btn-sm" title="Reject"><X size={13} /></button>
+                                <div className="match-actions" style={{ justifyContent: 'center' }}>
+                                  <button
+                                    className={`col-action-btn col-btn-approve ${isApproved ? 'is-active' : ''}`}
+                                    onClick={() => handleDecision(table.source_table, col.source, 'approved')}
+                                    title={isApproved ? 'Approved — Click to toggle' : 'Approve column mapping'}
+                                    aria-label="Approve"
+                                  >
+                                    <Check size={14} />
+                                  </button>
+                                  <button
+                                    className={`col-action-btn col-btn-reject ${isRejected ? 'is-active' : ''}`}
+                                    onClick={() => handleDecision(table.source_table, col.source, 'rejected')}
+                                    title={isRejected ? 'Excluded — Click to toggle' : 'Exclude column from validation'}
+                                    aria-label="Exclude"
+                                  >
+                                    <X size={14} />
+                                  </button>
                                 </div>
                               </td>
                             </motion.tr>
