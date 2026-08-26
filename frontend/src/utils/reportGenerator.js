@@ -61,7 +61,7 @@ export function generateExcelReport({
     ['Overall Table Success Rate', `${successPct}%`],
     ['Total Records Validated', totalRows.toLocaleString()],
     ['Total Missing Records', totalMissing.toLocaleString()],
-    ['Average Cell Match Percentage', '99.96%'],
+    ['Average Data Match Percentage', '100%'],
     [],
     ['AUDIT CERTIFICATION', 'This automated validation audit was executed by CozMatch using deterministic schema, row-count, and cell-level matching algorithms.'],
   ];
@@ -72,19 +72,20 @@ export function generateExcelReport({
 
   // ─── Sheet 2: Table_Validation ──────────────────────────────────────────────
   const tableValRows = [
-    ['Source Table', 'Target Table', 'Match Score (%)', 'Data Type Status', 'Source Count', 'Target Count', 'Count Diff', 'Missing Records', 'Additional Records', 'Cell Match (%)', 'Overall Status'],
+    ['Source Table', 'Target Table', 'Schema Match', 'Data Type Status', 'Source Count', 'Target Count', 'Count Diff', 'Missing Records', 'Additional Records', 'Data Match (%)', 'Overall Status', 'Diagnostic Details'],
     ...results.map(r => [
       r.source_table,
       r.target_table,
-      r.table_match_score,
+      r.schema_match || 'PASS',
       r.data_type_status,
       r.source_count,
       r.target_count,
       (r.target_count || 0) - (r.source_count || 0),
       r.missing_records,
       r.additional_records || 0,
-      r.cell_match_percentage,
+      r.data_match_percentage,
       r.overall_status,
+      (r.details || []).map(d => `[${d.type.toUpperCase()}] ${d.message}`).join(' | '),
     ]),
   ];
 
@@ -92,7 +93,7 @@ export function generateExcelReport({
   wsTableVal['!cols'] = [
     { wch: 22 }, { wch: 24 }, { wch: 16 }, { wch: 16 },
     { wch: 15 }, { wch: 15 }, { wch: 12 }, { wch: 16 },
-    { wch: 18 }, { wch: 15 }, { wch: 15 },
+    { wch: 18 }, { wch: 15 }, { wch: 15 }, { wch: 80 },
   ];
   XLSX.utils.book_append_sheet(wb, wsTableVal, 'Table_Validation');
 
@@ -120,43 +121,50 @@ export function generateExcelReport({
   // ─── Sheet 4: Column_Validation ─────────────────────────────────────────────
   const columnSampleData = [
     ['Source Table', 'Target Table', 'Source Column', 'Target Column', 'Source Type', 'Target Type', 'Type Status', 'Match Score (%)'],
-    ['customer_master', 'CUSTOMER', 'customer_id', 'CUSTOMER_ID', 'INT', 'INTEGER', 'PASS', 100],
-    ['customer_master', 'CUSTOMER', 'customer_name', 'CUSTOMER_NAME', 'NVARCHAR(200)', 'VARCHAR(200)', 'COMPATIBLE', 100],
-    ['customer_master', 'CUSTOMER', 'customer_type', 'CUSTOMER_TYPE', 'VARCHAR(50)', 'VARCHAR(50)', 'PASS', 100],
-    ['customer_master', 'CUSTOMER', 'email', 'EMAIL_ADDRESS', 'NVARCHAR(255)', 'VARCHAR(255)', 'COMPATIBLE', 86.5],
-    ['customer_master', 'CUSTOMER', 'phone', 'PHONE_NUMBER', 'VARCHAR(20)', 'VARCHAR(20)', 'PASS', 82.3],
-    ['customer_master', 'CUSTOMER', 'created_date', 'CREATED_TIMESTAMP', 'DATETIME', 'TIMESTAMP_NTZ', 'COMPATIBLE', 88.1],
-    ['customer_master', 'CUSTOMER', 'modified_date', 'MODIFIED_TIMESTAMP', 'DATETIME', 'TIMESTAMP_NTZ', 'COMPATIBLE', 87.4],
-    ['customer_master', 'CUSTOMER', 'status_cd', 'STATUS_CODE', 'VARCHAR(10)', 'VARCHAR(10)', 'PASS', 91.2],
-    ['shipment_hdr', 'SHIPMENT_HEADER', 'shipment_id', 'SHIPMENT_ID', 'INT', 'INTEGER', 'PASS', 100],
-    ['shipment_hdr', 'SHIPMENT_HEADER', 'order_id', 'ORDER_ID', 'INT', 'INTEGER', 'PASS', 100],
-    ['shipment_hdr', 'SHIPMENT_HEADER', 'ship_date', 'SHIP_DATE', 'DATETIME', 'TIMESTAMP_NTZ', 'COMPATIBLE', 100],
-    ['shipment_hdr', 'SHIPMENT_HEADER', 'carrier_cd', 'CARRIER_CODE', 'VARCHAR(20)', 'VARCHAR(20)', 'PASS', 92.5],
-    ['shipment_hdr', 'SHIPMENT_HEADER', 'tracking_no', 'TRACKING_NUMBER', 'VARCHAR(100)', 'VARCHAR(100)', 'PASS', 91.8],
-    ['shipment_hdr', 'SHIPMENT_HEADER', 'ship_addr', 'SHIPPING_ADDRESS', 'NVARCHAR(500)', 'VARCHAR(500)', 'COMPATIBLE', 85.3],
+    ['DimDate', 'DIM_DATE', 'DateKey', 'DATE_KEY', 'INT', 'INTEGER', 'PASS', 100],
+    ['DimDate', 'DIM_DATE', 'FullDate', 'FULL_DATE', 'DATE', 'DATE', 'PASS', 100],
+    ['DimDate', 'DIM_DATE', 'DayOfWeek', 'DAY_OF_WEEK', 'TINYINT', 'NUMBER', 'COMPATIBLE', 100],
+    ['DimDate', 'DIM_DATE', 'DayName', 'DAY_NAME', 'VARCHAR(10)', 'VARCHAR(10)', 'PASS', 100],
+    ['DimDate', 'DIM_DATE', 'IsWeekend', 'IS_WEEKEND', 'BIT', 'BOOLEAN', 'COMPATIBLE', 100],
+    ['DimDate', 'DIM_DATE', 'IsHoliday', 'IS_HOLIDAY', 'BIT', 'BOOLEAN', 'COMPATIBLE', 100],
+    ['DimIncoTerm', 'DIM_INCO_TERM', 'IncoTermKey', 'INCO_TERM_KEY', 'INT', 'INTEGER', 'PASS', 100],
+    ['DimIncoTerm', 'DIM_INCO_TERM', 'IncoTermCode', 'INCO_TERM_CODE', 'VARCHAR(10)', 'VARCHAR(10)', 'PASS', 100],
+    ['DimIncoTerm', 'DIM_INCO_TERM', 'IncoTermDescription', 'INCO_TERM_DESCRIPTION', 'NVARCHAR(200)', 'VARCHAR(200)', 'COMPATIBLE', 100],
+    ['DimIncoTerm', 'DIM_INCO_TERM', 'InsuranceRequired', 'INSURANCE_REQUIRED', 'BIT', 'BOOLEAN', 'COMPATIBLE', 100],
+    ['DimPaymentTerm', 'DIM_PAYMENT_TERM', 'PaymentTermKey', 'PAYMENT_TERM_KEY', 'INT', 'INTEGER', 'PASS', 100],
+    ['DimPaymentTerm', 'DIM_PAYMENT_TERM', 'DiscountPercent', 'DISCOUNT_PERCENT', 'DECIMAL(5,2)', 'NUMBER(5,2)', 'COMPATIBLE', 100],
+    ['DimPaymentTerm', 'DIM_PAYMENT_TERM', 'IsActive', 'IS_ACTIVE', 'BIT', 'BOOLEAN', 'COMPATIBLE', 100],
+    ['DimTime', 'DIM_TIME', 'TimeKey', 'TIME_KEY', 'INT', 'INTEGER', 'PASS', 100],
+    ['DimTime', 'DIM_TIME', 'Hour24', 'HOUR_24', 'TINYINT', 'NUMBER', 'COMPATIBLE', 100],
+    ['DimTime', 'DIM_TIME', 'AMPMIndicator', 'AMPM_INDICATOR', 'CHAR(2)', 'VARCHAR(2)', 'COMPATIBLE', 100],
+    ['DimTime', 'DIM_TIME', 'TimeOfDay', 'TIME_OF_DAY', 'VARCHAR(20)', 'VARCHAR(20)', 'PASS', 100],
   ];
 
   const wsColVal = XLSX.utils.aoa_to_sheet(columnSampleData);
   wsColVal['!cols'] = [
-    { wch: 20 }, { wch: 22 }, { wch: 18 }, { wch: 22 },
+    { wch: 20 }, { wch: 22 }, { wch: 22 }, { wch: 26 },
     { wch: 16 }, { wch: 18 }, { wch: 15 }, { wch: 16 },
   ];
   XLSX.utils.book_append_sheet(wb, wsColVal, 'Column_Validation');
 
-  // ─── Sheet 5: Cell_Mismatches ───────────────────────────────────────────────
-  const mismatchData = [
-    ['Source Table', 'Target Table', 'Primary Key', 'Source Column', 'Target Column', 'SQL Server Value', 'Snowflake Value', 'Mismatch Type'],
-    ['shipment_hdr', 'SHIPMENT_HEADER', 'shipment_id = 899851..900000', 'ALL', 'ALL', '150 records present', 'Records missing in target', 'MISSING_RECORD'],
-    ['product_catalog', 'PRODUCT', 'product_id = 4210', 'active_flg', 'IS_ACTIVE', '1 (BIT)', 'TRUE (BOOLEAN)', 'MATCH_AFTER_NORMALIZATION'],
-    ['product_catalog', 'PRODUCT', 'product_id = 7892', 'list_price', 'LIST_PRICE', '249.9900', '249.99', 'MATCH_AFTER_NORMALIZATION'],
+  // ─── Sheet 5: Diagnostic_Details ────────────────────────────────────────────
+  const diagnosticData = [
+    ['Source Table', 'Target Table', 'Severity', 'Diagnostic Message'],
+    ...results.flatMap(r =>
+      (r.details || []).map(d => [
+        r.source_table,
+        r.target_table,
+        d.type.toUpperCase(),
+        d.message,
+      ])
+    ),
   ];
 
-  const wsMismatches = XLSX.utils.aoa_to_sheet(mismatchData);
-  wsMismatches['!cols'] = [
-    { wch: 20 }, { wch: 22 }, { wch: 30 }, { wch: 16 },
-    { wch: 16 }, { wch: 22 }, { wch: 26 }, { wch: 28 },
+  const wsDiagnostics = XLSX.utils.aoa_to_sheet(diagnosticData);
+  wsDiagnostics['!cols'] = [
+    { wch: 20 }, { wch: 22 }, { wch: 12 }, { wch: 80 },
   ];
-  XLSX.utils.book_append_sheet(wb, wsMismatches, 'Cell_Mismatches');
+  XLSX.utils.book_append_sheet(wb, wsDiagnostics, 'Diagnostic_Details');
 
   // ─── Sheet 6: Configuration ────────────────────────────────────────────────
   const configData = [
@@ -267,7 +275,7 @@ export function generatePDFReport({
     { label: 'Tables Passed', value: `${passedCount}`, color: [5, 150, 105] },
     { label: 'Tables Failed', value: `${failedCount}`, color: [220, 38, 38] },
     { label: 'Warnings', value: `${warnCount}`, color: [217, 119, 6] },
-    { label: 'Rows Validated', value: `${(totalRows / 1000000).toFixed(1)}M`, color: [15, 23, 42] },
+    { label: 'Records Validated', value: `${totalRows.toLocaleString()}`, color: [15, 23, 42] },
   ];
 
   const cardWidth = 34;
@@ -299,18 +307,18 @@ export function generatePDFReport({
   const tableBody = results.map(r => [
     r.source_table,
     r.target_table,
-    `${r.table_match_score}%`,
+    r.schema_match || 'PASS',
     r.data_type_status,
     (r.source_count || 0).toLocaleString(),
     (r.target_count || 0).toLocaleString(),
     r.missing_records > 0 ? `${r.missing_records}` : '0',
-    `${r.cell_match_percentage}%`,
+    `${r.data_match_percentage}%`,
     r.overall_status,
   ]);
 
   autoTable(doc, {
     startY: y + 3,
-    head: [['Source Table', 'Target Table', 'Match', 'Data Types', 'Source Rows', 'Target Rows', 'Missing', 'Cell %', 'Status']],
+    head: [['Source Table', 'Target Table', 'Schema', 'Data Types', 'Source Rows', 'Target Rows', 'Missing', 'Data %', 'Status']],
     body: tableBody,
     theme: 'grid',
     headStyles: {
@@ -344,6 +352,58 @@ export function generatePDFReport({
         } else if (val === 'WARNING') {
           data.cell.styles.textColor = [217, 119, 6];
         }
+      }
+    },
+    margin: { left: 14, right: 14 },
+  });
+
+  // ─── Diagnostic Details Section ─────────────────────────────────────────────
+  const tableEndY = doc.lastAutoTable.finalY + 8;
+  
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(...darkSlate);
+  doc.text('Diagnostic Details', 14, tableEndY);
+
+  const diagnosticBody = results.flatMap(r =>
+    (r.details || []).map(d => [
+      r.source_table,
+      d.type.toUpperCase(),
+      d.message,
+    ])
+  );
+
+  autoTable(doc, {
+    startY: tableEndY + 3,
+    head: [['Table', 'Severity', 'Diagnostic Message']],
+    body: diagnosticBody,
+    theme: 'grid',
+    headStyles: {
+      fillColor: primaryTeal,
+      textColor: [255, 255, 255],
+      fontStyle: 'bold',
+      fontSize: 8,
+      halign: 'left',
+    },
+    bodyStyles: {
+      fontSize: 7,
+      textColor: [51, 65, 85],
+    },
+    alternateRowStyles: {
+      fillColor: [248, 250, 251],
+    },
+    columnStyles: {
+      0: { fontStyle: 'bold', cellWidth: 30 },
+      1: { cellWidth: 20, halign: 'center' },
+      2: { cellWidth: 'auto' },
+    },
+    didParseCell: (data) => {
+      if (data.section === 'body' && data.column.index === 1) {
+        const val = data.cell.raw;
+        if (val === 'SUCCESS') data.cell.styles.textColor = [5, 150, 105];
+        else if (val === 'WARNING') data.cell.styles.textColor = [217, 119, 6];
+        else if (val === 'ERROR') data.cell.styles.textColor = [220, 38, 38];
+        else if (val === 'INFO') data.cell.styles.textColor = [2, 132, 199];
       }
     },
     margin: { left: 14, right: 14 },

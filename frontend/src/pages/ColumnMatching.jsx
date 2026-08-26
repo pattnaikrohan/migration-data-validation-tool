@@ -6,67 +6,45 @@ import { motion, AnimatePresence } from 'framer-motion';
 import './ColumnMatching.css';
 
 const demoColumnMatches = {
-  customer_master: [
-    { source: 'customer_id', target: 'CUSTOMER_ID', score: 100, sType: 'INT', tType: 'INTEGER', status: 'PASS' },
-    { source: 'customer_name', target: 'CUSTOMER_NAME', score: 100, sType: 'NVARCHAR', tType: 'VARCHAR', status: 'COMPATIBLE' },
-    { source: 'customer_type', target: 'CUSTOMER_TYPE', score: 100, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
-    { source: 'email', target: 'EMAIL_ADDRESS', score: 86.5, sType: 'NVARCHAR', tType: 'VARCHAR', status: 'COMPATIBLE' },
-    { source: 'phone', target: 'PHONE_NUMBER', score: 82.3, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
-    { source: 'created_date', target: 'CREATED_TIMESTAMP', score: 88.1, sType: 'DATETIME', tType: 'TIMESTAMP_NTZ', status: 'COMPATIBLE' },
-    { source: 'modified_date', target: 'MODIFIED_TIMESTAMP', score: 87.4, sType: 'DATETIME', tType: 'TIMESTAMP_NTZ', status: 'COMPATIBLE' },
-    { source: 'status_cd', target: 'STATUS_CODE', score: 91.2, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
+  DimDate: [
+    { source: 'DateKey', target: 'DATE_KEY', score: 100, sType: 'INT', tType: 'INTEGER', status: 'PASS' },
+    { source: 'FullDate', target: 'FULL_DATE', score: 100, sType: 'DATE', tType: 'DATE', status: 'PASS' },
+    { source: 'DayOfWeek', target: 'DAY_OF_WEEK', score: 100, sType: 'TINYINT', tType: 'NUMBER', status: 'COMPATIBLE' },
+    { source: 'DayName', target: 'DAY_NAME', score: 100, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
+    { source: 'DayOfMonth', target: 'DAY_OF_MONTH', score: 100, sType: 'TINYINT', tType: 'NUMBER', status: 'COMPATIBLE' },
+    { source: 'DayOfYear', target: 'DAY_OF_YEAR', score: 100, sType: 'SMALLINT', tType: 'NUMBER', status: 'COMPATIBLE' },
+    { source: 'MonthNumber', target: 'MONTH_NUMBER', score: 100, sType: 'TINYINT', tType: 'NUMBER', status: 'COMPATIBLE' },
+    { source: 'MonthName', target: 'MONTH_NAME', score: 100, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
+    { source: 'Quarter', target: 'QUARTER', score: 100, sType: 'TINYINT', tType: 'NUMBER', status: 'COMPATIBLE' },
+    { source: 'Year', target: 'YEAR', score: 100, sType: 'SMALLINT', tType: 'NUMBER', status: 'COMPATIBLE' },
+    { source: 'IsWeekend', target: 'IS_WEEKEND', score: 100, sType: 'BIT', tType: 'BOOLEAN', status: 'COMPATIBLE' },
+    { source: 'IsHoliday', target: 'IS_HOLIDAY', score: 100, sType: 'BIT', tType: 'BOOLEAN', status: 'COMPATIBLE' },
   ],
-  shipment_hdr: [
-    { source: 'shipment_id', target: 'SHIPMENT_ID', score: 100, sType: 'INT', tType: 'INTEGER', status: 'PASS' },
-    { source: 'order_id', target: 'ORDER_ID', score: 100, sType: 'INT', tType: 'INTEGER', status: 'PASS' },
-    { source: 'ship_date', target: 'SHIP_DATE', score: 100, sType: 'DATETIME', tType: 'TIMESTAMP_NTZ', status: 'COMPATIBLE' },
-    { source: 'carrier_cd', target: 'CARRIER_CODE', score: 92.5, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
-    { source: 'tracking_no', target: 'TRACKING_NUMBER', score: 91.8, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
-    { source: 'ship_addr', target: 'SHIPPING_ADDRESS', score: 85.3, sType: 'NVARCHAR', tType: 'VARCHAR', status: 'COMPATIBLE' },
+  DimIncoTerm: [
+    { source: 'IncoTermKey', target: 'INCO_TERM_KEY', score: 100, sType: 'INT', tType: 'INTEGER', status: 'PASS' },
+    { source: 'IncoTermCode', target: 'INCO_TERM_CODE', score: 100, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
+    { source: 'IncoTermDescription', target: 'INCO_TERM_DESCRIPTION', score: 100, sType: 'NVARCHAR', tType: 'VARCHAR', status: 'COMPATIBLE' },
+    { source: 'ResponsibilityTransfer', target: 'RESPONSIBILITY_TRANSFER', score: 100, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
+    { source: 'FreightResponsibility', target: 'FREIGHT_RESPONSIBILITY', score: 100, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
+    { source: 'InsuranceRequired', target: 'INSURANCE_REQUIRED', score: 100, sType: 'BIT', tType: 'BOOLEAN', status: 'COMPATIBLE' },
   ],
-  invoice_dtl: [
-    { source: 'invoice_id', target: 'INVOICE_ID', score: 100, sType: 'INT', tType: 'INTEGER', status: 'PASS' },
-    { source: 'line_no', target: 'LINE_NUMBER', score: 94.2, sType: 'INT', tType: 'INTEGER', status: 'PASS' },
-    { source: 'product_cd', target: 'PRODUCT_CODE', score: 93.1, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
-    { source: 'qty', target: 'QUANTITY', score: 91.5, sType: 'DECIMAL', tType: 'NUMBER', status: 'COMPATIBLE' },
-    { source: 'unit_price', target: 'UNIT_PRICE', score: 100, sType: 'MONEY', tType: 'NUMBER', status: 'COMPATIBLE' },
-    { source: 'line_amt', target: 'LINE_AMOUNT', score: 94.8, sType: 'MONEY', tType: 'NUMBER', status: 'COMPATIBLE' },
-    { source: 'tax_amt', target: 'TAX_AMOUNT', score: 93.6, sType: 'MONEY', tType: 'NUMBER', status: 'COMPATIBLE' },
+  DimPaymentTerm: [
+    { source: 'PaymentTermKey', target: 'PAYMENT_TERM_KEY', score: 100, sType: 'INT', tType: 'INTEGER', status: 'PASS' },
+    { source: 'PaymentTermCode', target: 'PAYMENT_TERM_CODE', score: 100, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
+    { source: 'PaymentTermDescription', target: 'PAYMENT_TERM_DESCRIPTION', score: 100, sType: 'NVARCHAR', tType: 'VARCHAR', status: 'COMPATIBLE' },
+    { source: 'DueDays', target: 'DUE_DAYS', score: 100, sType: 'INT', tType: 'NUMBER', status: 'COMPATIBLE' },
+    { source: 'DiscountPercent', target: 'DISCOUNT_PERCENT', score: 100, sType: 'DECIMAL', tType: 'NUMBER', status: 'COMPATIBLE' },
+    { source: 'DiscountDays', target: 'DISCOUNT_DAYS', score: 100, sType: 'INT', tType: 'NUMBER', status: 'COMPATIBLE' },
+    { source: 'IsActive', target: 'IS_ACTIVE', score: 100, sType: 'BIT', tType: 'BOOLEAN', status: 'COMPATIBLE' },
   ],
-  sales_orders: [
-    { source: 'order_id', target: 'ORDER_ID', score: 100, sType: 'INT', tType: 'INTEGER', status: 'PASS' },
-    { source: 'cust_id', target: 'CUSTOMER_ID', score: 89.4, sType: 'INT', tType: 'INTEGER', status: 'PASS' },
-    { source: 'order_dt', target: 'ORDER_DATE', score: 92.1, sType: 'DATETIME', tType: 'TIMESTAMP_NTZ', status: 'COMPATIBLE' },
-    { source: 'total_amt', target: 'TOTAL_AMOUNT', score: 95.3, sType: 'MONEY', tType: 'NUMBER', status: 'COMPATIBLE' },
-    { source: 'status', target: 'ORDER_STATUS', score: 88.5, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
-  ],
-  employee_master: [
-    { source: 'emp_id', target: 'EMPLOYEE_ID', score: 91.3, sType: 'INT', tType: 'INTEGER', status: 'PASS' },
-    { source: 'emp_name', target: 'EMPLOYEE_NAME', score: 92.6, sType: 'NVARCHAR', tType: 'VARCHAR', status: 'COMPATIBLE' },
-    { source: 'dept_cd', target: 'DEPARTMENT_CODE', score: 90.1, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
-    { source: 'hire_dt', target: 'HIRE_DATE', score: 93.4, sType: 'DATE', tType: 'DATE', status: 'PASS' },
-    { source: 'mgr_id', target: 'MANAGER_ID', score: 88.7, sType: 'INT', tType: 'INTEGER', status: 'PASS' },
-    { source: 'salary', target: 'SALARY', score: 100, sType: 'DECIMAL', tType: 'NUMBER', status: 'COMPATIBLE' },
-  ],
-  product_catalog: [
-    { source: 'product_id', target: 'PRODUCT_ID', score: 100, sType: 'INT', tType: 'INTEGER', status: 'PASS' },
-    { source: 'product_name', target: 'PRODUCT_NAME', score: 100, sType: 'NVARCHAR', tType: 'VARCHAR', status: 'COMPATIBLE' },
-    { source: 'category', target: 'CATEGORY', score: 100, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
-    { source: 'list_price', target: 'LIST_PRICE', score: 100, sType: 'MONEY', tType: 'NUMBER', status: 'COMPATIBLE' },
-    { source: 'active_flg', target: 'IS_ACTIVE', score: 82.5, sType: 'BIT', tType: 'BOOLEAN', status: 'COMPATIBLE' },
-  ],
-  payment_txn: [
-    { source: 'txn_id', target: 'PAYMENT_ID', score: 89.5, sType: 'INT', tType: 'INTEGER', status: 'PASS' },
-    { source: 'order_id', target: 'ORDER_ID', score: 100, sType: 'INT', tType: 'INTEGER', status: 'PASS' },
-    { source: 'txn_amt', target: 'AMOUNT', score: 88.2, sType: 'MONEY', tType: 'NUMBER', status: 'COMPATIBLE' },
-    { source: 'txn_dt', target: 'TRANSACTION_DATE', score: 91.7, sType: 'DATETIME', tType: 'TIMESTAMP_NTZ', status: 'COMPATIBLE' },
-    { source: 'payment_method', target: 'PAYMENT_METHOD', score: 100, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
-  ],
-  order_history: [
-    { source: 'history_id', target: 'HISTORY_ID', score: 100, sType: 'BIGINT', tType: 'INTEGER', status: 'COMPATIBLE' },
-    { source: 'order_id', target: 'ORDER_ID', score: 100, sType: 'INT', tType: 'INTEGER', status: 'PASS' },
-    { source: 'event_type', target: 'EVENT_TYPE', score: 100, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
-    { source: 'event_dt', target: 'EVENT_TIMESTAMP', score: 90.0, sType: 'DATETIME2', tType: 'TIMESTAMP_NTZ', status: 'COMPATIBLE' },
+  DimTime: [
+    { source: 'TimeKey', target: 'TIME_KEY', score: 100, sType: 'INT', tType: 'INTEGER', status: 'PASS' },
+    { source: 'Hour24', target: 'HOUR_24', score: 100, sType: 'TINYINT', tType: 'NUMBER', status: 'COMPATIBLE' },
+    { source: 'Hour12', target: 'HOUR_12', score: 100, sType: 'TINYINT', tType: 'NUMBER', status: 'COMPATIBLE' },
+    { source: 'Minute', target: 'MINUTE', score: 100, sType: 'TINYINT', tType: 'NUMBER', status: 'COMPATIBLE' },
+    { source: 'Second', target: 'SECOND', score: 100, sType: 'TINYINT', tType: 'NUMBER', status: 'COMPATIBLE' },
+    { source: 'AMPMIndicator', target: 'AMPM_INDICATOR', score: 100, sType: 'CHAR', tType: 'VARCHAR', status: 'COMPATIBLE' },
+    { source: 'TimeOfDay', target: 'TIME_OF_DAY', score: 100, sType: 'VARCHAR', tType: 'VARCHAR', status: 'PASS' },
   ],
 };
 
@@ -83,7 +61,7 @@ function getColumnsForTable(sourceTable, targetTable) {
     return {
       source: sc.column_name,
       target: tc ? tc.column_name : 'UNMAPPED',
-      score: tc ? 90 : 0,
+      score: tc ? 100 : 0,
       sType: sc.data_type,
       tType: tc ? tc.data_type : 'N/A',
       status: 'COMPATIBLE',
@@ -107,7 +85,7 @@ function getConfidence(score) {
 
 export default function ColumnMatching({ onNext, onPrev }) {
   const state = useAppState();
-  const [expandedTable, setExpandedTable] = useState('customer_master');
+  const [expandedTable, setExpandedTable] = useState('DimDate');
   const [columnDecisions, setColumnDecisions] = useState({});
   const [toastMessage, setToastMessage] = useState(null);
 
@@ -191,7 +169,8 @@ export default function ColumnMatching({ onNext, onPrev }) {
           const tableDecs = columnDecisions[table.source_table] || {};
           const approvedCount = columns.filter(c => tableDecs[c.source] === 'approved').length;
           const rejectedCount = columns.filter(c => tableDecs[c.source] === 'rejected').length;
-          const avgScore = columns.length > 0 ? (columns.reduce((s, c) => s + c.score, 0) / columns.length).toFixed(1) : 0;
+          const allApproved = approvedCount === columns.length && columns.length > 0;
+          const displayScore = allApproved ? 100 : (columns.length > 0 ? (columns.reduce((s, c) => s + c.score, 0) / columns.length).toFixed(1) : 0);
 
           return (
             <motion.div
@@ -221,13 +200,12 @@ export default function ColumnMatching({ onNext, onPrev }) {
                   {rejectedCount > 0 && (
                     <span className="badge badge-fail">{rejectedCount} excluded</span>
                   )}
-                  <span className={`badge badge-${table.confidence.replace('_', '-')}`}>
-                    {table.score}%
+                  <span className={`badge ${allApproved ? 'badge-pass' : `badge-${table.confidence.replace('_', '-')}`}`}>
+                    {displayScore}%
                   </span>
                   <span className="col-count">
                     {columns.length} columns
                   </span>
-                  <span className="col-avg-score">Avg: {avgScore}%</span>
                 </div>
               </button>
 

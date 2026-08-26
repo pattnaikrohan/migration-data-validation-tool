@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { useAppState } from '../store/AppContext';
 import { DEMO_VALIDATION_RESULTS, DEMO_TABLE_MATCHES } from '../data/demoData';
 import {
-  CheckCircle2, XCircle, AlertTriangle,
+  CheckCircle2, XCircle, AlertTriangle, Info,
   FileSpreadsheet, FileText, TrendingUp, Database, Rows3,
-  Loader2,
+  Loader2, ChevronDown, ChevronRight,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -48,6 +48,14 @@ const statusColors = {
 
 const CHART_COLORS = ['#059669', '#dc2626', '#d97706', '#0284c7'];
 
+/** Detail icon per type */
+function DetailIcon({ type }) {
+  if (type === 'success') return <CheckCircle2 size={14} className="detail-icon detail-icon-success" />;
+  if (type === 'warning') return <AlertTriangle size={14} className="detail-icon detail-icon-warning" />;
+  if (type === 'error') return <XCircle size={14} className="detail-icon detail-icon-error" />;
+  return <Info size={14} className="detail-icon detail-icon-info" />;
+}
+
 export default function ResultsSummary({ onPrev }) {
   const state = useAppState();
   const results = DEMO_VALIDATION_RESULTS;
@@ -59,6 +67,7 @@ export default function ResultsSummary({ onPrev }) {
   const [downloadingExcel, setDownloadingExcel] = useState(false);
   const [downloadingPDF, setDownloadingPDF] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+  const [expandedRow, setExpandedRow] = useState(null);
 
   const pieData = [
     { name: 'Passed', value: passed },
@@ -67,10 +76,9 @@ export default function ResultsSummary({ onPrev }) {
   ].filter(d => d.value > 0);
 
   const barData = results.map(r => ({
-    name: r.source_table.replace('_', ' ').split(' ').map(w => w[0].toUpperCase()).join(''),
+    name: r.source_table.replace(/([A-Z])/g, ' $1').trim().split(' ').map(w => w[0]).join(''),
     fullName: r.source_table,
-    matchPct: r.cell_match_percentage,
-    score: r.table_match_score,
+    matchPct: r.data_match_percentage,
     status: r.overall_status,
   }));
 
@@ -199,7 +207,7 @@ export default function ResultsSummary({ onPrev }) {
         <div className="glass-card-static stat-card">
           <div className="stat-icon"><Rows3 size={18} /></div>
           <div className="counter-value"><AnimatedCounter value={totalSourceRows} /></div>
-          <div className="counter-label">Rows Validated</div>
+          <div className="counter-label">Records Validated</div>
         </div>
         <div className="glass-card-static stat-card">
           <div className="stat-icon fail-icon"><Database size={18} /></div>
@@ -264,7 +272,7 @@ export default function ResultsSummary({ onPrev }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <h4>Cell Match Percentage by Table</h4>
+          <h4>Data Match % by Table</h4>
           <div className="chart-container">
             <ResponsiveContainer width="100%" height={230}>
               <BarChart data={barData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
@@ -280,7 +288,7 @@ export default function ResultsSummary({ onPrev }) {
                     fontSize: '0.8rem',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                   }}
-                  formatter={(value) => [`${value}%`, 'Match %']}
+                  formatter={(value) => [`${value}%`, 'Data Match %']}
                   labelFormatter={(label) => barData.find(d => d.name === label)?.fullName || label}
                 />
                 <Bar dataKey="matchPct" radius={[4, 4, 0, 0]}>
@@ -303,72 +311,109 @@ export default function ResultsSummary({ onPrev }) {
       >
         <div className="results-table-header">
           <h4>Table-Level Results</h4>
+          <span className="results-table-hint">Click any row to view detailed diagnostics</span>
         </div>
         <table className="data-table results-table">
           <thead>
             <tr>
+              <th style={{ width: 28 }}></th>
               <th>Source Table</th>
               <th>Target Table</th>
-              <th>Match Score</th>
+              <th>Schema Match</th>
               <th>Data Types</th>
               <th>Source Count</th>
               <th>Target Count</th>
               <th>Missing</th>
-              <th>Cell Match %</th>
+              <th>Data Match %</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
-            {results.map((row, i) => (
-              <motion.tr
-                key={row.source_table}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 + i * 0.04 }}
-              >
-                <td><span className="table-name-cell">{row.source_table}</span></td>
-                <td><span className="table-name-cell">{row.target_table}</span></td>
-                <td>
-                  <div className="score-bar compact">
-                    <div className="score-bar-track">
-                      <div className="score-bar-fill" style={{
-                        width: `${row.table_match_score}%`,
-                        background: `linear-gradient(90deg, #008b8b, #00afaf)`,
-                      }} />
-                    </div>
-                    <span className="score-bar-value">{row.table_match_score}%</span>
-                  </div>
-                </td>
-                <td>
-                  <span className={`badge ${row.data_type_status === 'PASS' ? 'badge-pass' : 'badge-warning'}`}>
-                    {row.data_type_status}
-                  </span>
-                </td>
-                <td className="mono-cell">{formatNumber(row.source_count)}</td>
-                <td className="mono-cell">{formatNumber(row.target_count)}</td>
-                <td>
-                  <span className={row.missing_records > 0 ? 'text-fail' : 'text-pass'}>
-                    {row.missing_records}
-                  </span>
-                </td>
-                <td>
-                  <span className="cell-match-value" style={{
-                    color: row.cell_match_percentage === 100 ? 'var(--status-pass)' :
-                           row.cell_match_percentage >= 99.9 ? 'var(--teal-700)' : 'var(--status-warning)',
-                  }}>
-                    {row.cell_match_percentage}%
-                  </span>
-                </td>
-                <td>
-                  <span className={`badge ${
-                    row.overall_status === 'PASS' ? 'badge-pass' :
-                    row.overall_status === 'FAIL' ? 'badge-fail' : 'badge-warning'
-                  }`}>
-                    {row.overall_status}
-                  </span>
-                </td>
-              </motion.tr>
-            ))}
+            {results.map((row, i) => {
+              const isExpanded = expandedRow === row.source_table;
+
+              return (
+                <AnimatePresence key={row.source_table}>
+                  <motion.tr
+                    className={`results-row-clickable ${isExpanded ? 'row-expanded' : ''}`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 + i * 0.04 }}
+                    onClick={() => setExpandedRow(isExpanded ? null : row.source_table)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <td className="expand-cell">
+                      {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                    </td>
+                    <td><span className="table-name-cell">{row.source_table}</span></td>
+                    <td><span className="table-name-cell">{row.target_table}</span></td>
+                    <td>
+                      <span className={`badge ${row.schema_match === 'PASS' ? 'badge-pass' : 'badge-fail'}`}>
+                        {row.schema_match === 'PASS' ? <><CheckCircle2 size={11} /> PASS</> : <><XCircle size={11} /> FAIL</>}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`badge ${row.data_type_status === 'PASS' ? 'badge-pass' : 'badge-warning'}`}>
+                        {row.data_type_status}
+                      </span>
+                    </td>
+                    <td className="mono-cell">{formatNumber(row.source_count)}</td>
+                    <td className="mono-cell">{formatNumber(row.target_count)}</td>
+                    <td>
+                      <span className={row.missing_records > 0 ? 'text-fail' : 'text-pass'}>
+                        {row.missing_records}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="cell-match-value" style={{
+                        color: row.data_match_percentage === 100 ? 'var(--status-pass)' :
+                               row.data_match_percentage >= 99.9 ? 'var(--teal-700)' : 'var(--status-warning)',
+                        fontWeight: 600,
+                      }}>
+                        {row.data_match_percentage}%
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`badge ${
+                        row.overall_status === 'PASS' ? 'badge-pass' :
+                        row.overall_status === 'FAIL' ? 'badge-fail' : 'badge-warning'
+                      }`}>
+                        {row.overall_status}
+                      </span>
+                    </td>
+                  </motion.tr>
+
+                  {/* Expandable Detail Row */}
+                  {isExpanded && row.details && row.details.length > 0 && (
+                    <motion.tr
+                      key={`${row.source_table}-details`}
+                      className="detail-row"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <td colSpan={10}>
+                        <div className="detail-panel">
+                          <div className="detail-panel-header">
+                            <span className="detail-panel-title">
+                              Diagnostic Details — {row.source_table} → {row.target_table}
+                            </span>
+                          </div>
+                          <div className="detail-items">
+                            {row.details.map((detail, j) => (
+                              <div key={j} className={`detail-item detail-item-${detail.type}`}>
+                                <DetailIcon type={detail.type} />
+                                <span className="detail-message">{detail.message}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  )}
+                </AnimatePresence>
+              );
+            })}
           </tbody>
         </table>
       </motion.div>
