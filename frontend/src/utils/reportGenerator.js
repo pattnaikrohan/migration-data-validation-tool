@@ -240,26 +240,26 @@ export function generatePDFReport({
 
   doc.setTextColor(...darkSlate);
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
+  doc.setFontSize(8.5);
   doc.text('Source Database:', 18, y + 7);
   doc.text('Target Database:', 18, y + 15);
 
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(51, 65, 85);
-  doc.text(`Microsoft SQL Server (${sourceSchema})`, 54, y + 7);
-  doc.text(`Snowflake Data Cloud (${targetSchema})`, 54, y + 15);
+  doc.text(`Microsoft SQL Server (${sourceSchema})`, 46, y + 7);
+  doc.text(`Snowflake Data Cloud (${targetSchema})`, 46, y + 15);
 
   doc.setFont('helvetica', 'bold');
-  doc.text('Audit Status:', 130, y + 7);
-  doc.text('Engine Mode:', 130, y + 15);
+  doc.text('Audit Status:', 140, y + 7);
+  doc.text('Engine Mode:', 140, y + 15);
 
   const hasFailed = results.some(r => r.overall_status === 'FAIL');
   doc.setTextColor(hasFailed ? 220 : 5, hasFailed ? 38 : 150, hasFailed ? 38 : 105);
-  doc.text(hasFailed ? 'FAILED WITH EXCEPTIONS' : 'PASSED / CERTIFIED', 156, y + 7);
+  doc.text(hasFailed ? 'FAILED WITH EXCEPTIONS' : 'PASSED / CERTIFIED', 162, y + 7);
 
   doc.setTextColor(51, 65, 85);
   doc.setFont('helvetica', 'normal');
-  doc.text('Automated Multi-Stage', 156, y + 15);
+  doc.text('Automated Multi-Stage', 162, y + 15);
 
   // ─── KPI Metrics Tiles ─────────────────────────────────────────────────────
   y += 28;

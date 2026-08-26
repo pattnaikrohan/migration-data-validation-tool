@@ -118,8 +118,8 @@ export const DEMO_VALIDATION_RESULTS = [
     details: [
       { type: 'success', message: 'All 3,652 records matched successfully between source and target.' },
       { type: 'success', message: 'All 12 columns validated — schema fully compatible.' },
-      { type: 'info', message: 'Data type conversion: BIT → BOOLEAN applied for IsWeekend, IsHoliday (lossless).' },
-      { type: 'info', message: 'Data type conversion: TINYINT/SMALLINT → NUMBER applied (lossless).' },
+      { type: 'info', message: 'Data type conversion: BIT -> BOOLEAN applied for IsWeekend, IsHoliday (lossless).' },
+      { type: 'info', message: 'Data type conversion: TINYINT/SMALLINT -> NUMBER applied (lossless).' },
     ],
   },
   {
@@ -131,9 +131,9 @@ export const DEMO_VALIDATION_RESULTS = [
     data_match_percentage: 100,
     overall_status: 'WARNING',
     details: [
-      { type: 'warning', message: 'Data type narrowing detected: NVARCHAR(200) → VARCHAR(200) for column IncoTermDescription. Unicode characters may be affected.' },
+      { type: 'warning', message: 'Data type narrowing detected: NVARCHAR(200) -> VARCHAR(200) for column IncoTermDescription. Unicode characters may be affected.' },
       { type: 'success', message: 'All 11 records matched — row counts are identical.' },
-      { type: 'info', message: 'Data type conversion: BIT → BOOLEAN applied for InsuranceRequired (lossless).' },
+      { type: 'info', message: 'Data type conversion: BIT -> BOOLEAN applied for InsuranceRequired (lossless).' },
       { type: 'info', message: 'All 6 column mappings approved and validated.' },
     ],
   },
@@ -148,8 +148,8 @@ export const DEMO_VALIDATION_RESULTS = [
     details: [
       { type: 'success', message: 'All 15 records matched successfully between source and target.' },
       { type: 'success', message: 'All 7 columns validated — schema fully compatible.' },
-      { type: 'info', message: 'Data type conversion: DECIMAL(5,2) → NUMBER(5,2) for DiscountPercent (lossless).' },
-      { type: 'info', message: 'Data type conversion: BIT → BOOLEAN applied for IsActive (lossless).' },
+      { type: 'info', message: 'Data type conversion: DECIMAL(5,2) -> NUMBER(5,2) for DiscountPercent (lossless).' },
+      { type: 'info', message: 'Data type conversion: BIT -> BOOLEAN applied for IsActive (lossless).' },
     ],
   },
   {
@@ -163,8 +163,8 @@ export const DEMO_VALIDATION_RESULTS = [
     details: [
       { type: 'success', message: 'All 1,440 records matched successfully between source and target.' },
       { type: 'success', message: 'All 7 columns validated — schema fully compatible.' },
-      { type: 'info', message: 'Data type conversion: CHAR(2) → VARCHAR(2) for AMPMIndicator (lossless).' },
-      { type: 'info', message: 'Data type conversion: TINYINT → NUMBER applied for Hour24, Hour12, Minute, Second (lossless).' },
+      { type: 'info', message: 'Data type conversion: CHAR(2) -> VARCHAR(2) for AMPMIndicator (lossless).' },
+      { type: 'info', message: 'Data type conversion: TINYINT -> NUMBER applied for Hour24, Hour12, Minute, Second (lossless).' },
     ],
   },
 ];
