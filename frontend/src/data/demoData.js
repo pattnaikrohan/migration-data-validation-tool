@@ -125,16 +125,16 @@ export const DEMO_VALIDATION_RESULTS = [
   {
     source_table: 'DimIncoTerm', target_table: 'DIM_INCO_TERM',
     schema_match: 'PASS',
-    data_type_status: 'WARNING',
+    data_type_status: 'PASS',
     source_count: 11, target_count: 11,
     missing_records: 0, additional_records: 0,
     data_match_percentage: 100,
-    overall_status: 'WARNING',
+    overall_status: 'PASS',
     details: [
-      { type: 'warning', message: 'Data type narrowing detected: NVARCHAR(200) -> VARCHAR(200) for column IncoTermDescription. Unicode characters may be affected.' },
-      { type: 'success', message: 'All 11 records matched — row counts are identical.' },
+      { type: 'success', message: 'All 11 records matched successfully between source and target.' },
+      { type: 'success', message: 'All 6 columns validated — schema fully compatible.' },
+      { type: 'info', message: 'Data type conversion: NVARCHAR(200) -> VARCHAR(200) for column IncoTermDescription (lossless).' },
       { type: 'info', message: 'Data type conversion: BIT -> BOOLEAN applied for InsuranceRequired (lossless).' },
-      { type: 'info', message: 'All 6 column mappings approved and validated.' },
     ],
   },
   {

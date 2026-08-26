@@ -46,7 +46,7 @@ export default function ValidationDashboard({ onNext, onPrev }) {
     setPhaseStatuses(prev => ({ ...prev, [phase.key]: 'running' }));
 
     const timer = setTimeout(() => {
-      const status = phase.key === 'hash_comparison' ? 'warning' : 'pass';
+      const status = 'pass';
       setPhaseStatuses(prev => ({ ...prev, [phase.key]: status }));
       setProgress(((currentPhase + 1) / PHASES.length) * 100);
       setCurrentPhase(prev => prev + 1);
