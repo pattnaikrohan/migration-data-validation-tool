@@ -278,7 +278,7 @@ export default function ResultsSummary({ onPrev }) {
               <BarChart data={barData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                 <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={{ stroke: '#e2e8f0' }} tickLine={false} />
-                <YAxis domain={[99.5, 100.05]} tick={{ fill: '#64748b', fontSize: 11 }} axisLine={{ stroke: '#e2e8f0' }} tickLine={false} />
+                <YAxis domain={[0, 100]} tick={{ fill: '#64748b', fontSize: 11 }} axisLine={{ stroke: '#e2e8f0' }} tickLine={false} />
                 <Tooltip
                   contentStyle={{
                     background: '#ffffff',
